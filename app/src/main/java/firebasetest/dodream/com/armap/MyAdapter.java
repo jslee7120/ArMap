@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import firebasetest.dodream.com.armap.model.Item;
+
 public class MyAdapter extends ArrayAdapter<Item> {
 
 
