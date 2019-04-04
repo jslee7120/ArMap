@@ -1,4 +1,4 @@
-package firebasetest.dodream.com.armap;
+package firebasetest.dodream.com.armap.model;
 
 public class Item{
     private String title;
