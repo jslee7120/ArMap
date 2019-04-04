@@ -36,6 +36,7 @@ public class FindAddress extends AppCompatActivity {
     TMapData tMapData;
     Handler handler;
     Message msg;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
