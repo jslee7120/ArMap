@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         LinearLayout linearLayout = (LinearLayout)findViewById(R.id.map_view);
 
         tmapview = new TMapView(this);
+
         linearLayout.addView(tmapview);
         tmapview.setSKTMapApiKey(mApiKey);
 
@@ -117,6 +118,8 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, FindAddress.class);
                 intent.putExtra("findAddr",etFindAddr.getText().toString());
+                intent.putExtra("startLat", "37.277720");
+                intent.putExtra("startLon","127.134097");
                 startActivity(intent);
             }
         });
