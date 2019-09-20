@@ -2,6 +2,8 @@ package firebasetest.dodream.com.armap.model;
 
 import android.widget.ScrollView;
 
+import com.skt.Tmap.TMapPoint;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +12,7 @@ import javax.xml.transform.Result;
 public class FindAddressInfo {
         public String name;
         public String Address;
-        public Double Pointlat;
-        public Double Pointlon;
+        public TMapPoint tMapPoint;
 
         public String getName() {
             return name;
@@ -29,19 +30,11 @@ public class FindAddressInfo {
             Address = address;
         }
 
-    public Double getPointlat() {
-        return Pointlat;
+    public TMapPoint gettMapPoint() {
+        return tMapPoint;
     }
 
-    public void setPointlat(Double pointlat) {
-        Pointlat = pointlat;
-    }
-
-    public Double getPointlon() {
-        return Pointlon;
-    }
-
-    public void setPointlon(Double pointlon) {
-        Pointlon = pointlon;
+    public void settMapPoint(TMapPoint tMapPoint) {
+        this.tMapPoint = tMapPoint;
     }
 }

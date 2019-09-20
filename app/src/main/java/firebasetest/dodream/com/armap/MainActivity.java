@@ -8,24 +8,31 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.skt.Tmap.TMapCircle;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapGpsManager;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPoint;
+import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
 
 import java.util.ArrayList;
 
 import firebasetest.dodream.com.armap.model.MapPoint;
+
+import static android.util.Log.d;
+import static com.skt.Tmap.TMapView.TILETYPE_HDTILE;
 
 public class MainActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback {
 
@@ -45,6 +52,9 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     private Double lat = null;
     private Double lon = null;
 
+    private String destination,des_lat, des_lon;
+    private String destination_name=null;
+
     Button btFindAddr;
     EditText etFindAddr;
 
@@ -60,6 +70,11 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+       // TMapPolyLine polyline = tmapview.getPolyLineFromID(TestID1);
+      //  TMapCircle circle = tmapview.getCircleFromID(TestID2);
+       // TMapPolyLine tpolyline = new TMapPolyLine();
+       // tmapview.addTMapPolyLine("TestID", tpolyline);
+
         btFindAddr = (Button)findViewById(R.id.btFindAddr);
         etFindAddr = (EditText) findViewById(R.id.etFindAddr);
 
@@ -69,14 +84,13 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         LinearLayout linearLayout = (LinearLayout)findViewById(R.id.map_view);
 
         tmapview = new TMapView(this);
+
         linearLayout.addView(tmapview);
         tmapview.setSKTMapApiKey(mApiKey);
 
-        addPoint();
-        showMarkerPoint();
-
         //현재 보는 방향
         tmapview.setIconVisibility(true);
+        tmapview.setCompassMode(true);
 
         //줌 레벨
         tmapview.setZoomLevel(30);
@@ -112,23 +126,44 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             }
         });
 
+        TMapPoint tpoint = tmapview.getLocationPoint();
+        final double Latitude = tpoint.getLatitude();
+        final double Longitude = tpoint.getLongitude();
+
         btFindAddr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, FindAddress.class);
                 intent.putExtra("findAddr",etFindAddr.getText().toString());
-                startActivity(intent);
+                intent.putExtra("startLat", String.valueOf(tmapgps.getLocation().getLatitude()));
+                intent.putExtra("startLon",String.valueOf(tmapgps.getLocation().getLongitude()));
+                startActivityForResult(intent,3000);
             }
         });
+
+     /*   tMapData.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, point1, point2, new TMapData.FindPathDataListenerCallback() {
+            @Override
+            public void onFindPathData(TMapPolyLine polyLine) {
+                tmapview.addTMapPath(polyLine);
+            }
+        });*/
 
 
     }
 
     public void addPoint() { //여기에 핀을 꼽을 포인트들을 배열에 add해주세요!
         // 강남 //
-        m_mapPoint.add(new MapPoint("강남대학교 이공",37.277201, 127.134097));
+        Log.d("목적지","True");
+        m_mapPoint.clear();
+        m_mapPoint.add(new MapPoint("목적지",Double.valueOf(des_lat), Double.valueOf(des_lon)));
+        showMarkerPoint();
     }
 
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+    }
 
     public void showMarkerPoint() {// 마커 찍는거 빨간색 포인트.
         for (int i = 0; i < m_mapPoint.size(); i++) {
@@ -150,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
             // 풍선뷰 안의 항목에 글을 지정합니다.
             item1.setCalloutTitle(m_mapPoint.get(i).getName());
-            item1.setCalloutSubTitle("서울");
+            item1.setCalloutSubTitle(destination_name);
             item1.setCanShowCallout(true);
             item1.setAutoCalloutVisible(true);
 
@@ -160,8 +195,26 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
             String strID = String.format("pmarker%d", mMarkerID++);
 
+            tmapview.removeAllMarkerItem();
             tmapview.addMarkerItem(strID, item1);
             mArrayMarkerID.add(strID);
         }
+
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+            if(requestCode == 3000){
+                destination =  data.getStringExtra("destination");
+                destination_name = data.getStringExtra("destination_Name");
+
+                des_lat = destination.split(" ")[1];
+                des_lon = destination.split(" ")[3];
+                Log.d("testtt",des_lat+ "     "+ des_lon);
+                addPoint();
+                tmapview.setTileType(TILETYPE_HDTILE);
+            }
+    }
+
 }
